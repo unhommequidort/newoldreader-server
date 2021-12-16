@@ -27,7 +27,7 @@ app.post("/api/register", async (req, res) => {
     });
     res.json({ status: "ok" });
   } catch (error) {
-    res.json({ status: "error", error: "That username is already taken" });
+    res.json({ status: "error", error });
   }
 });
 
