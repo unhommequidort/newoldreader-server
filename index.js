@@ -20,6 +20,7 @@ mongoose
 // Register new user
 app.post("/api/register", async (req, res) => {
   try {
+    // Hash password
     const newPassword = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
       username: req.body.username,
@@ -41,12 +42,14 @@ app.post("/api/login", async (req, res) => {
     return res.json({ status: "error", error: "Invalid login" });
   }
 
+  // Validate password
   const isPasswordValid = await bcrypt.compare(
     req.body.password,
     user.password
   );
 
   if (isPasswordValid) {
+    // Create jwt token
     const token = jwt.sign(
       {
         username: user.username,
@@ -118,6 +121,9 @@ app.post("/api/deleteitem", async (req, res) => {
 
 // Parse the rss feed and send it to the client
 app.post("/api/rssfeed", async (req, res) => {
+  const token = req.headers["x-access-token"];
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
   try {
     var rss = await parse(req.body.selectedUrl);
 
